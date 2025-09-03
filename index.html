@@ -313,24 +313,27 @@
             width: 300px;
             height: 300px;
             position: relative;
-            animation: rotate 20s linear infinite;
         }
 
-        .brain-core {
+        .avatar-container {
             width: 100%;
             height: 100%;
-            background: var(--gradient);
             border-radius: 50%;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 50px rgba(102, 126, 234, 0.5);
             animation: pulse 3s ease-in-out infinite;
+            background: var(--gradient);
+            border: 4px solid rgba(102, 126, 234, 0.8);
         }
 
-        .brain-icon {
-            font-size: 4rem;
-            color: white;
+        .avatar-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
             animation: float 4s ease-in-out infinite;
         }
 
@@ -341,14 +344,14 @@
             animation: rotateReverse 15s linear infinite;
         }
 
-        .orbit-ring:nth-child(1) {
+        .orbit-ring:nth-child(2) {
             width: 120%;
             height: 120%;
             top: -10%;
             left: -10%;
         }
 
-        .orbit-ring:nth-child(2) {
+        .orbit-ring:nth-child(3) {
             width: 140%;
             height: 140%;
             top: -20%;
@@ -1287,8 +1290,11 @@
             </div>
             <div class="hero-visual">
                 <div class="ai-brain">
-                    <div class="brain-core">
-                        <i class="fas fa-brain brain-icon"></i>
+                    <div class="avatar-container">
+                        <video class="avatar-video" autoplay playsinline>
+                            <source src="Avatar IV Video (1).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                     <div class="orbit-ring">
                         <i class="fab fa-python orbit-icon" style="top: -10px; left: 50%; transform: translateX(-50%);"></i>
@@ -1714,240 +1720,361 @@
         </div>
     </div>
 
-    <script>
-        // Initialize AI Background Particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            if (!particlesContainer) return;
-            const particleCount = 50;
+<script>
+    // Initialize AI Background Particles
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        if (!particlesContainer) return;
+        const particleCount = 50;
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                particlesContainer.appendChild(particle);
-            }
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 6 + 's';
+            particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Initialize Neural Network with cursor interaction
+    function createNeuralNetwork() {
+        const networkContainer = document.getElementById('neuralNetwork');
+        if (!networkContainer) return;
+        const nodeCount = 30;
+        const nodes = [];
+
+        for (let i = 0; i < nodeCount; i++) {
+            const node = document.createElement('div');
+            node.className = 'neural-node';
+            node.style.left = Math.random() * 100 + '%';
+            node.style.top = Math.random() * 100 + '%';
+            networkContainer.appendChild(node);
+            nodes.push(node);
         }
 
-        // Initialize Neural Network with cursor interaction
-        function createNeuralNetwork() {
-            const networkContainer = document.getElementById('neuralNetwork');
-            if (!networkContainer) return;
-            const nodeCount = 30;
-            const nodes = [];
+        // Create connections
+        function createConnections() {
+            networkContainer.querySelectorAll('.neural-connection').forEach(el => el.remove());
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dist = Math.sqrt(
+                        (nodes[i].offsetLeft - nodes[j].offsetLeft) ** 2 +
+                        (nodes[i].offsetTop - nodes[j].offsetTop) ** 2
+                    );
+                    if (dist < 150) { // Connect nodes within a certain distance
+                        const connection = document.createElement('div');
+                        connection.className = 'neural-connection';
+                        const angle = Math.atan2(
+                            nodes[j].offsetTop - nodes[i].offsetTop,
+                            nodes[j].offsetLeft - nodes[i].offsetLeft
+                        ) * 180 / Math.PI;
 
-            for (let i = 0; i < nodeCount; i++) {
-                const node = document.createElement('div');
-                node.className = 'neural-node';
-                node.style.left = Math.random() * 100 + '%';
-                node.style.top = Math.random() * 100 + '%';
-                networkContainer.appendChild(node);
-                nodes.push(node);
-            }
-
-            // Create connections
-            function createConnections() {
-                networkContainer.querySelectorAll('.neural-connection').forEach(el => el.remove());
-                for (let i = 0; i < nodes.length; i++) {
-                    for (let j = i + 1; j < nodes.length; j++) {
-                        const dist = Math.sqrt(
-                            (nodes[i].offsetLeft - nodes[j].offsetLeft)**2 +
-                            (nodes[i].offsetTop - nodes[j].offsetTop)**2
-                        );
-                        if (dist < 150) { // Connect nodes within a certain distance
-                            const connection = document.createElement('div');
-                            connection.className = 'neural-connection';
-                            const angle = Math.atan2(
-                                nodes[j].offsetTop - nodes[i].offsetTop,
-                                nodes[j].offsetLeft - nodes[i].offsetLeft
-                            ) * 180 / Math.PI;
-
-                            connection.style.width = dist + 'px';
-                            connection.style.left = nodes[i].offsetLeft + 'px';
-                            connection.style.top = nodes[i].offsetTop + 'px';
-                            connection.style.transform = `rotate(${angle}deg)`;
-                            networkContainer.appendChild(connection);
-                        }
+                        connection.style.width = dist + 'px';
+                        connection.style.left = nodes[i].offsetLeft + 'px';
+                        connection.style.top = nodes[i].offsetTop + 'px';
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        networkContainer.appendChild(connection);
                     }
                 }
             }
-
-            createConnections();
-            
-            // Re-create connections on mouse move for a dynamic effect
-            window.addEventListener('mousemove', (e) => {
-                if(window.innerWidth > 600) {
-                    nodes.forEach(node => {
-                        const dist = Math.sqrt((e.clientX - node.offsetLeft)**2 + (e.clientY - node.offsetTop)**2);
-                        if (dist < 150) {
-                            const angle = Math.atan2(e.clientY - node.offsetTop, e.clientX - node.clientX);
-                            node.style.transform = `translate(${Math.cos(angle) * 10}px, ${Math.sin(angle) * 10}px)`;
-                        } else {
-                            node.style.transform = 'translate(0,0)';
-                        }
-                    });
-                    createConnections();
-                }
-            });
         }
 
-        // Mobile Menu Toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
+        createConnections();
 
-        menuToggle.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-        });
-
-        // Smooth Scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    navLinks.classList.remove('active');
-                }
-            });
-        });
-
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // AI Chatbot Functionality
-        const chatbotToggle = document.getElementById('chatbotToggle');
-        const chatbotWindow = document.getElementById('chatbotWindow');
-        const chatbotClose = document.getElementById('chatbotClose');
-        const chatbotInput = document.getElementById('chatbotInput');
-        const chatbotSend = document.getElementById('chatbotSend');
-        const chatbotMessages = document.getElementById('chatbotMessages');
-
-        const botResponses = {
-            'ai': "Chethana specializes in AI/ML with experience in LangChain, RAG systems, Computer Vision using OpenCV, YOLO, TensorFlow, and neural networks. She's currently leading AI projects at Biztechnosys!",
-            'python': "She's an expert Python developer with experience in Django, FastAPI, Flask, and has built multiple backend systems, APIs, and ERP integrations.",
-            'projects': "Her featured projects include an AI-based RAG API using LangChain and Mistral, Face Recognition Attendance System with CNN, Object Detection with YOLO, and several web applications.",
-            'experience': "Chethana is currently working as Jr Python Developer & AI Team Lead at Biztechnosys, where she leads AI projects and has built innovative solutions like OneDrive RAG API and computer vision systems.",
-            'skills': "Her technical skills include AI/ML (LangChain, TensorFlow, OpenCV, YOLO, CNN), Backend (Python, Django, FastAPI, Flask), Databases (MySQL), and Data Visualization (Power BI, Tableau).",
-            'education': "She holds a BCA degree with 8.99 CGPA and University 8th Rank from S B C First Grade Women's College, Davanagere, plus certifications in IBM Data Analysis and Power BI.",
-            'contact': "You can reach Chethana at chethanan831@gmail.com or +91 7996723184. She's based in Davanagere, Karnataka, India.",
-            'hello': "Hello! I'm here to help you learn about Chethana's AI expertise, Python development skills, and innovative projects. What would you like to know?",
-            'hi': "Hi there! Feel free to ask me about Chethana's AI/ML experience, Python projects, or her technical background.",
-            'default': "That's interesting! I can tell you about Chethana's AI/ML expertise, Python development experience, projects, skills, education, or how to contact her. What would you like to know more about?"
-        };
-
-        function addMessage(message, isBot = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
-            messageDiv.textContent = message;
-            chatbotMessages.appendChild(messageDiv);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        }
-
-        function getBotResponse(userMessage) {
-            const message = userMessage.toLowerCase();
-            for (const [key, response] of Object.entries(botResponses)) {
-                if (message.includes(key)) {
-                    return response;
-                }
-            }
-            return botResponses.default;
-        }
-
-        chatbotToggle.addEventListener('click', function() {
-            chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
-        });
-
-        chatbotClose.addEventListener('click', function() {
-            chatbotWindow.style.display = 'none';
-        });
-
-        function sendMessage() {
-            const message = chatbotInput.value.trim();
-            if (message) {
-                addMessage(message, false);
-                chatbotInput.value = '';
-
-                setTimeout(() => {
-                    const response = getBotResponse(message);
-                    addMessage(response, true);
-                }, 1000);
-            }
-        }
-
-        chatbotSend.addEventListener('click', sendMessage);
-        chatbotInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        // Initialize everything when page loads
-        window.addEventListener('load', function() {
-            // Only initialize heavy animations on larger screens
-            if(window.innerWidth > 600) {
-                createParticles();
-                createNeuralNetwork();
-            }
-        });
-
-        // Add scroll animations with staggered effects
-        document.addEventListener('DOMContentLoaded', function() {
-            const observerOptions = {
-                threshold: 0.2,
-                rootMargin: '0px'
-            };
-
-            const observer = new IntersectionObserver(function(entries, observer) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const items = entry.target.querySelectorAll('.timeline-item, .skill-category, .project-card, .education-card');
-                        items.forEach((item, index) => {
-                            setTimeout(() => {
-                                item.classList.add('animated');
-                            }, index * 200);
-                        });
-                        observer.unobserve(entry.target);
+        // Re-create connections on mouse move for a dynamic effect
+        window.addEventListener('mousemove', (e) => {
+            if (window.innerWidth > 600) {
+                nodes.forEach(node => {
+                    const dist = Math.sqrt((e.clientX - node.offsetLeft) ** 2 + (e.clientY - node.offsetTop) ** 2);
+                    if (dist < 150) {
+                        const angle = Math.atan2(e.clientY - node.offsetTop, e.clientX - node.clientX);
+                        node.style.transform = `translate(${Math.cos(angle) * 10}px, ${Math.sin(angle) * 10}px)`;
+                    } else {
+                        node.style.transform = 'translate(0,0)';
                     }
                 });
-            }, observerOptions);
+                createConnections();
+            }
+        });
+    }
 
-            document.querySelectorAll('.timeline, .skills-grid, .projects-grid, .education-grid').forEach(container => {
-                observer.observe(container);
-            });
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', function () {
+        navLinks.classList.toggle('active');
+    });
+
+    // Smooth Scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                navLinks.classList.remove('active');
+            }
+        });
+    });
+
+    // Navbar Scroll Effect
+    window.addEventListener('scroll', function () {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // AI Chatbot Functionality
+    const chatbotToggle = document.getElementById('chatbotToggle');
+    const chatbotWindow = document.getElementById('chatbotWindow');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotSend = document.getElementById('chatbotSend');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+
+    const botResponses = {
+        'ai': "Chethana specializes in AI/ML with experience in LangChain, RAG systems, Computer Vision using OpenCV, YOLO, TensorFlow, and neural networks. She's currently leading AI projects at Biztechnosys!",
+        'python': "She's an expert Python developer with experience in Django, FastAPI, Flask, and has built multiple backend systems, APIs, and ERP integrations.",
+        'projects': "Her featured projects include an AI-based RAG API using LangChain and Mistral, Face Recognition Attendance System with CNN, Object Detection with YOLO, and several web applications.",
+        'experience': "Chethana is currently working as Jr Python Developer & AI Team Lead at Biztechnosys, where she leads AI projects and has built innovative solutions like OneDrive RAG API and computer vision systems.",
+        'skills': "Her technical skills include AI/ML (LangChain, TensorFlow, OpenCV, YOLO, CNN), Backend (Python, Django, FastAPI, Flask), Databases (MySQL), and Data Visualization (Power BI, Tableau).",
+        'education': "She holds a BCA degree with 8.99 CGPA and University 8th Rank from S B C First Grade Women's College, Davanagere, plus certifications in IBM Data Analysis and Power BI.",
+        'contact': "You can reach Chethana at chethanan831@gmail.com or +91 7996723184. She's based in Davanagere, Karnataka, India.",
+        'hello': "Hello! I'm here to help you learn about Chethana's AI expertise, Python development skills, and innovative projects. What would you like to know?",
+        'hi': "Hi there! Feel free to ask me about Chethana's AI/ML experience, Python projects, or her technical background.",
+        'default': "That's interesting! I can tell you about Chethana's AI/ML expertise, Python development experience, projects, skills, education, or how to contact her. What would you like to know more about?"
+    };
+
+    function addMessage(message, isBot = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
+        messageDiv.textContent = message;
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function getBotResponse(userMessage) {
+        const message = userMessage.toLowerCase();
+        for (const [key, response] of Object.entries(botResponses)) {
+            if (message.includes(key)) {
+                return response;
+            }
+        }
+        return botResponses.default;
+    }
+
+    chatbotToggle.addEventListener('click', function () {
+        chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    chatbotClose.addEventListener('click', function () {
+        chatbotWindow.style.display = 'none';
+    });
+
+    function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (message) {
+            addMessage(message, false);
+            chatbotInput.value = '';
+
+            setTimeout(() => {
+                const response = getBotResponse(message);
+                addMessage(response, true);
+            }, 1000);
+        }
+    }
+
+    chatbotSend.addEventListener('click', sendMessage);
+    chatbotInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+// === VIDEO SOUND FIX ===
+    function showEnableSoundOverlay(reason) {
+        console.log('Autoplay blocked — overlay shown', reason || '');
+        
+        // Remove old overlay if any
+        const old = document.getElementById('avatar-sound-overlay-full');
+        if (old) old.remove();
+        
+        // Blur the video
+        avatarVideo.style.filter = "blur(6px)";
+        avatarVideo.style.transition = "filter 0.3s ease";
+        
+        // Full-screen overlay
+        const overlayFull = document.createElement('div');
+        overlayFull.id = 'avatar-sound-overlay-full';
+        Object.assign(overlayFull.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            zIndex: '2147483647',
+            pointerEvents: 'auto',
+            background: 'transparent'
+        });
+        document.body.appendChild(overlayFull);
+        
+        // Create circular button positioned exactly at video center
+        const rect = avatarVideo.getBoundingClientRect();
+        const btnSize = Math.max(100, Math.min(rect.width * 0.6, 160)); // scale with video
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'avatar-sound-btn';
+        btn.innerHTML = `<span style="font-size:1.2em;margin-right:6px">&#9658;</span> Click to listen`;
+        
+        Object.assign(btn.style, {
+            position: 'absolute',
+            left: (rect.left + rect.width / 2 - btnSize / 2) + 'px',
+            top: (rect.top + rect.height / 2 - btnSize / 2) + 'px',
+            width: btnSize + 'px',
+            height: btnSize + 'px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            zIndex: '2147483648',
+            fontFamily: 'Poppins, sans-serif',
+            fontSize: '14px',
+            fontWeight: '600',
+            boxShadow: '0 8px 30px rgba(102,126,234,0.4)',
+            textAlign: 'center',
+            padding: '10px',
+            pointerEvents: 'auto',
+            backdropFilter: 'blur(2px)',
+            transition: 'all 0.3s ease'
+        });
+        overlayFull.appendChild(btn);
+        
+        // Keep button centered on resize/scroll
+        function updatePosition() {
+            const r = avatarVideo.getBoundingClientRect();
+            const newBtnSize = Math.max(100, Math.min(r.width * 0.5, 140));
+            btn.style.width = newBtnSize + 'px';
+            btn.style.height = newBtnSize + 'px';
+            btn.style.left = (r.left + (r.width / 2) - (newBtnSize / 2)) + 'px';
+            btn.style.top = (r.top + (r.height / 2) - (newBtnSize / 2)) + 'px';
+        }
+        
+        window.addEventListener('resize', updatePosition);
+        window.addEventListener('scroll', updatePosition, true);
+        
+        // Hover effects
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.1)';
+            btn.style.boxShadow = '0 12px 40px rgba(102,126,234,0.6)';
         });
         
-        // Interactive 3D tilt effect for cards
-        document.querySelectorAll('.tilt-effect').forEach(card => {
-            const maxTilt = 10; // Max rotation in degrees
-
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const tiltX = (y / rect.height - 0.5) * maxTilt * -1;
-                const tiltY = (x / rect.width - 0.5) * maxTilt;
-                
-                card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-            });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)';
+            btn.style.boxShadow = '0 8px 30px rgba(102,126,234,0.4)';
         });
-    </script>
+        
+        // On click, enable sound
+        function attemptPlay(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            console.log('Attempting to enable sound...');
+            
+            avatarVideo.muted = false;
+            avatarVideo.volume = 0.8;
+            
+            avatarVideo.play().then(() => {
+                console.log('Video now playing with sound');
+                avatarVideo.style.filter = 'none';
+                overlayFull.remove();
+            }).catch(err => {
+                console.warn('Play failed on click, trying fallback:', err);
+                // Fallback: play muted first, then unmute
+                avatarVideo.muted = true;
+                avatarVideo.play().then(() => {
+                    setTimeout(() => {
+                        avatarVideo.muted = false;
+                        avatarVideo.volume = 0.8;
+                    }, 500);
+                    avatarVideo.style.filter = 'none';
+                    overlayFull.remove();
+                }).catch(err2 => console.error('Fallback also failed:', err2));
+            });
+        }
+        
+        btn.addEventListener('click', attemptPlay, { passive: false });
+        btn.addEventListener('touchend', attemptPlay, { passive: false });
+        
+        console.log('Sound overlay created successfully');
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', function () {
+        if (window.innerWidth > 600) {
+            createParticles();
+            createNeuralNetwork();
+        }
+
+        // video init
+        window.avatarVideo = document.querySelector('.avatar-video');
+        if (avatarVideo) {
+            avatarVideo.setAttribute('playsinline', '');
+            avatarVideo.muted = false;
+            avatarVideo.volume = 0.9;
+            avatarVideo.play().catch(() => showEnableSoundOverlay());
+        }
+    });
+
+    // Scroll animations
+    document.addEventListener('DOMContentLoaded', function () {
+        const observerOptions = { threshold: 0.2, rootMargin: '0px' };
+        const observer = new IntersectionObserver(function (entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const items = entry.target.querySelectorAll('.timeline-item, .skill-category, .project-card, .education-card');
+                    items.forEach((item, index) => {
+                        setTimeout(() => {
+                            item.classList.add('animated');
+                        }, index * 200);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.timeline, .skills-grid, .projects-grid, .education-grid').forEach(container => {
+            observer.observe(container);
+        });
+    });
+
+    // Tilt effect
+    document.querySelectorAll('.tilt-effect').forEach(card => {
+        const maxTilt = 10;
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const tiltX = (y / rect.height - 0.5) * maxTilt * -1;
+            const tiltY = (x / rect.width - 0.5) * maxTilt;
+            card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+        });
+    });
+</script>
+
+
 </body>
 </html>
